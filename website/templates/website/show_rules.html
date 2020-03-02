@@ -1,0 +1,27 @@
+{%extends "website/base.html"%}
+{%load crispy_forms_tags%}
+{%block content%}
+<div class="content-section">
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">STT</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Min Support</th>
+                <th scope="col">Confidence</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>{{minconf}}</td>
+                <td>{{fileName}}</td>
+                <td>{{selectedAlgorithm}}</td>
+                <td>{{minsupp}}</td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+{%endblock content%}

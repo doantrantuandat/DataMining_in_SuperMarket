@@ -1,0 +1,47 @@
+{%extends "website/base.html"%}
+{%load crispy_forms_tags%}
+{%block content%}
+<div class="content-section">
+    <form method="POST" action="{% url 'rules' %}">
+        <form class="md-form">
+            {% csrf_token %}
+            <div class="form-group custom-file">
+                <input type="file" class="custom-file-input" id="customFile" accept=".csv">
+                <label class="custom-file-label" for="customFile" >Choose file</label>
+                <input type="text" name='txtFile' style="visibility: hidden;" id="getFileName">
+            </div>
+            <div class="form-group">
+                <label for="selectAlgorithm">Algorithm</label>
+                <select id="selectAlgorithm" class="form-control" name="selectedAlgorithm">
+                    <option selected>Choose...</option>
+                    <option>Apriori</option>
+                    <option>FP-Growth</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputMinSupp">Minimm Support</label>
+                    <input type="text" class="form-control" id="inputMinSupp" name="minsupp">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputMinConf">Minimum Confidence</label>
+                    <input type="text" class="form-control" id="inputMinConf" name="minconf">
+                </div>
+            </div>
+            <div class="form_group">
+                <button class="btn btn-outline-info" type="submit">Calculate</button>
+            </div>
+        </form>
+    </form>
+</div>
+<script>
+    // Add the following code if you want the name of the file appear on select
+    $(".custom-file-input").on("change", function () {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        $("#getFileName").val(fileName)   
+    });
+    
+</script>
+
+{%endblock content%}
