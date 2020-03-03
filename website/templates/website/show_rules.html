@@ -13,14 +13,19 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th scope="row">1</th>
-                <td>{{minconf}}</td>
-                <td>{{fileName}}</td>
-                <td>{{selectedAlgorithm}}</td>
-                <td>{{minsupp}}</td>
-            </tr>
+            {% for data in association_rules %}
 
+            <tr>
+                <th scope="row"></th>
+                <td>
+                    {{data.dad}}
+                </td>
+                <td>{{data.sup}}</td>
+                <td>{{data.minsupp}}</td>
+                <td>{{data.minconf}}</td>
+            </tr>
+            
+            {% endfor %}
         </tbody>
     </table>
 </div>

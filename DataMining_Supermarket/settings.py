@@ -56,7 +56,9 @@ ROOT_URLCONF = 'DataMining_Supermarket.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'website/templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,3 +123,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'website/static')
+]
+MEDIA_ROOT = os.path.join(BASE_DIR, 'data')
+MEDIA_URL = '/data/'
