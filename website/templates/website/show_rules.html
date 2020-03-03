@@ -8,20 +8,17 @@
                 <th scope="col">STT</th>
                 <th scope="col">First</th>
                 <th scope="col">Last</th>
-                <th scope="col">Min Support</th>
                 <th scope="col">Confidence</th>
             </tr>
         </thead>
         <tbody>
             {% for data in association_rules %}
-
             <tr>
-                <th scope="row"></th>
+                <th scope="row">{{ forloop.counter }}</th>
                 <td>
                     {{data.dad}}
                 </td>
                 <td>{{data.sup}}</td>
-                <td>{{data.minsupp}}</td>
                 <td>{{data.minconf}}</td>
             </tr>
             
