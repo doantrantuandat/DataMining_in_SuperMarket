@@ -5,7 +5,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', views.algorithm, name='mining-home'),
     path('rule/', views.calculate, name='rules'),
-    # path('upload/', views.upload, name='upload')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,

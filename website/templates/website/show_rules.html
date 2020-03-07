@@ -2,6 +2,10 @@
 {%load crispy_forms_tags%}
 {%block content%}
 <div class="content-section">
+    <div id="shownumberrule" style="font-weight: bold; text-align: center;">
+        <p>Number line of data: {{lendata}}</p>
+        <p>Number of mining rules, using algorithm {{selectedAlgorithm}}: {{lenrules}}</p>
+    </div>
     <table class="table">
         <thead class="thead-dark">
             <tr>
@@ -16,12 +20,18 @@
             <tr>
                 <th scope="row">{{ forloop.counter }}</th>
                 <td>
-                    {{data.dad}}
+                    {% for i in data.dad %}
+                    <span>{{ i }} , </span>
+                    {% endfor %}
                 </td>
-                <td>{{data.sup}}</td>
+                <td>
+                    {% for i in data.sup %}
+                    <span>{{ i }} , </span>
+                    {% endfor %}
+                </td>
                 <td>{{data.minconf}}</td>
             </tr>
-            
+
             {% endfor %}
         </tbody>
     </table>

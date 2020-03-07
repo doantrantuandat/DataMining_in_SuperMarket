@@ -98,10 +98,19 @@ a.article-title:hover {
 .file-field.big-2 .file-path-wrapper .file-path {
     height: 3.5rem;
 }
-.content-section{
+
+.content-section {
     margin-top: 100px;
     align-items: center;
 }
-.btn-outline-info{
+
+.btn-outline-info {
     width: 100%;
 }
+.exception{
+    color: red;
+}
+.hidden {
+     visibility:hidden;
+}
+    

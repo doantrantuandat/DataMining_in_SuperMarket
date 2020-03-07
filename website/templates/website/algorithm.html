@@ -1,4 +1,5 @@
 {%extends "website/base.html"%}
+{% load static %}
 {%load crispy_forms_tags%}
 {%block content%}
 <div class="content-section">
@@ -6,7 +7,7 @@
         <form class="md-form">
             {% csrf_token %}
             <div class="form-group custom-file">
-                <input type="file" class="custom-file-input" id="customFile" accept=".csv" name="file_name">
+                <input type="file" class="custom-file-input" id="customFile" accept=".csv, .xlsx" name="file_name">
                 <label class="custom-file-label" for="customFile">Choose file</label>
             </div>
             <div class="form-group">
@@ -20,11 +21,11 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="inputMinSupp">Minimum Support (%)</label>
-                    <input type="text" class="form-control" id="inputMinSupp" name="minsupp" autocomplete="off">
+                    <input type="text" class="form-control" id="inputMinSupp" name="minsupp">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="inputMinConf">Minimum Confidence</label>
-                    <input type="text" class="form-control" id="inputMinConf" name="minconf" autocomplete="off">
+                    <input type="text" class="form-control" id="inputMinConf" name="minconf">
                 </div>
             </div>
             <div class="form_group">
@@ -39,7 +40,20 @@
         var fileName = $(this).val().split("\\").pop();
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
-
+    $(document).ready(function () {
+        var $regexname = /^([a-zA-Z]{3,16})$/;
+        $('.name').on('keypress keydown keyup', function () {
+            if (!$(this).val().match($regexname)) {
+                // there is a mismatch, hence show the error message
+                $('.exception').removeClass('hidden');
+                $('.exception').show();
+            }
+            else {
+                // else, do not display message
+                $('.exception').addClass('hidden');
+            }
+        });
+    });
 </script>
-
+<script type="text/javascript" src="{%static '/website/main.js'%}"></script>
 {%endblock content%}
