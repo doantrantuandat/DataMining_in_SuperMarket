@@ -3,12 +3,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.conf.urls import include, url
 from website import views
-from django.core.files.storage import FileSystemStorage
 import pandas as pd
-from apyori import apriori
 import os
 from os.path import dirname, abspath
-import pyfpgrowth
+from django.core.files.storage import FileSystemStorage
 from numpy import array_equal
 from django import template
 from mlxtend.preprocessing import TransactionEncoder
