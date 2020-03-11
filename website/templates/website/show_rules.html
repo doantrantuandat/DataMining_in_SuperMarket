@@ -10,9 +10,11 @@
         <thead class="thead-dark">
             <tr>
                 <th scope="col">STT</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
+                <th scope="col">Antecedents</th>
+                <th scope="col">Consequents</th>
+                <th scope="col">Support</th>
                 <th scope="col">Confidence</th>
+                <th scope="col">Lift</th>
             </tr>
         </thead>
         <tbody>
@@ -20,18 +22,19 @@
             <tr>
                 <th scope="row">{{ forloop.counter }}</th>
                 <td>
-                    {% for i in data.dad %}
+                    {% for i in data.antecedents %}
                     <span>{{ i }} , </span>
                     {% endfor %}
                 </td>
                 <td>
-                    {% for i in data.sup %}
+                    {% for i in data.consequents %}
                     <span>{{ i }} , </span>
                     {% endfor %}
                 </td>
-                <td>{{data.minconf}}</td>
+                <td>{{data.support }}</td>
+                <td>{{data.confidence}}</td>
+                <td>{{data.lift}}</td>
             </tr>
-
             {% endfor %}
         </tbody>
     </table>

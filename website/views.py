@@ -9,6 +9,11 @@ from apyori import apriori
 import os
 from os.path import dirname, abspath
 import pyfpgrowth
+from numpy import array_equal
+from django import template
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import association_rules
+from mlxtend.frequent_patterns import fpgrowth, apriori
 
 
 def algorithm(request):
@@ -44,6 +49,8 @@ def calculate(request):
             store_data = pd.read_csv(BASE_DIR, header=None)
         if name.find(".xlsx") != -1:
             store_data = pd.read_excel(BASE_DIR, header=None)
+        
+        
         # change data conform algorithm
         records = []
         for i in range(0, len(store_data)):
@@ -59,27 +66,32 @@ def calculate(request):
                 if str(records[i][j]) != "nan":
                     new.append(str(records[i][j]))
             records_withoutNan.append(new)
-        """
-        function FP-GROWTH algorithm
-        return pattens, rules
-        in rules have (super rules, sup rules and confidence every a rules)
-        """
-        def fpgrowth_find_association_rules(dataset, minsup, minconf):
-            patterns = pyfpgrowth.find_frequent_patterns(
-                dataset, float(minsup)/100*len(dataset))
-            rules = pyfpgrowth.generate_association_rules(
-                patterns, float(minconf))
-            return patterns, rules
+        
+        te = TransactionEncoder()
+        te_ary = te.fit(records_withoutNan).transform(records_withoutNan)
+        df = pd.DataFrame(te_ary, columns=te.columns_)
+        
         """
         function APRIORI algorithm
         return alist rules
         in rules have (super rules, sup rules and confidence every a rules)
         """
         def apriori_find_association_rules(dataset, minsup, minconf):
-            association_rules = apriori(records_withoutNan, min_support=(
-                float(minsupp)/100), min_confidence=float(minconf))
-            association_results = list(association_rules)
-            return association_results
+            patterns_ap = apriori(df, min_support=float(minsupp)/100, use_colnames=True)
+            rules_ap = association_rules(patterns_ap, metric="confidence", min_threshold=float(minconf)/100)
+            rules_ap_sort_descending = rules_ap.sort_values(by="confidence", ascending=False)
+            return rules_ap_sort_descending
+        """
+        function FP-GROWTH algorithm
+        return pattens, rules
+        in rules have (super rules, sup rules and confidence every a rules)
+        """
+        def fpgrowth_find_association_rules(dataset, minsup, minconf):
+            patterns_fp = fpgrowth(df, min_support=float(minsupp)/100, use_colnames=True, verbose=0)
+            rules_fp = association_rules(patterns_fp, metric="confidence", min_threshold=float(minconf)/100)
+            rules_fp_sort_descending = rules_fp.sort_values(by="confidence", ascending=False)
+            return rules_fp_sort_descending
+
         """
         set event use Apriori or FP_Growth
         """
@@ -88,45 +100,44 @@ def calculate(request):
             association_results_APRIORI: is a List Object Apriori return after calculate
             """
             association_results_APRIORI = apriori_find_association_rules(
-                records_withoutNan, minsupp, minconf)
-            # Get rules have confidence max
-            # return a list max value of object rules
-            for item in association_results_APRIORI:
-                print(item[2])
-            association_results_final_apriori = []
-            max_conf_arr = []
-            for item in association_results_APRIORI:
-                max_conf = 0
-                for i in range(0, len(item[2])):
-                    if item[2][i][2] > max_conf:
-                        max_conf = item[2][i][2]
-                max_conf_arr.append(max_conf)
-            association_results_APRIORI_temp = []
-            # comparing max and values in association_results_APRIORI
-            for i in range(0, len(association_results_APRIORI)):
-                for j in range(0, len(association_results_APRIORI[i][2])):
-                    if association_results_APRIORI[i][2][j][2] == max_conf_arr[i]:
-                        association_results_APRIORI_temp.append(association_results_APRIORI[i][2][j])
-            # assign value type allow json form
-            for item in association_results_APRIORI_temp:
-                one_rule = {}
-                one_rule['dad'] = list(item[0])
-                one_rule['sup'] = list(item[1])
-                one_rule['minconf'] = round(item[2], 3)
-                association_results_final_apriori.append(one_rule)
+                df, minsupp, minconf)
+            rules_ap_antecedents_list = list(association_results_APRIORI['antecedents'])
+            rules_ap_consequents_list = list(association_results_APRIORI['consequents'])
+            rules_ap_support_list = list(association_results_APRIORI['support'])
+            rules_ap_confidence_list = list(association_results_APRIORI['confidence'])
+            rules_ap_lift_list = list(association_results_APRIORI['lift'])
 
-            return render(request, 'website/show_rules.html', {'selectedAlgorithm': selectedAlgorithm, 'lenrules': len(association_results_final_apriori), 'lendata': len(records_withoutNan), 'association_rules': association_results_final_apriori})
+            rules_ap_final = []
+            for i in range(0, len(rules_ap_antecedents_list)):
+                onerules = {}
+                onerules['antecedents'] = list(rules_ap_antecedents_list[i])
+                onerules['consequents'] = list(rules_ap_consequents_list[i])
+                onerules['support'] = round(rules_ap_support_list[i], 3)
+                onerules['confidence'] = round(rules_ap_confidence_list[i], 3)
+                onerules['lift'] = round(rules_ap_lift_list[i], 3)
+                rules_ap_final.append(onerules)
+            
+
+            return render(request, 'website/show_rules.html', {'selectedAlgorithm': selectedAlgorithm, 'lenrules': len(rules_ap_final), 'lendata': len(df), 'association_rules': rules_ap_final})
         elif selectedAlgorithm == 'FP-Growth':
-            association_results_FPGROWTH_patterns, association_results_FPGROWTH_rules = fpgrowth_find_association_rules(
-                records_withoutNan, minsupp, minconf)
-            association_results_final_fpgrowth = []
-            for key, val in association_results_FPGROWTH_rules.items():
-                one_rule = {}
-                one_rule['dad'] = key
-                one_rule['sup'] = val[0]
-                one_rule['minconf'] = round(val[1], 3)
-                if len(one_rule['sup']) == 0:
-                    continue
-
-                association_results_final_fpgrowth.append(one_rule)
-            return render(request, 'website/show_rules.html', {'selectedAlgorithm': selectedAlgorithm, 'lenrules': len(association_results_final_fpgrowth), 'lendata': len(records_withoutNan), 'association_rules': association_results_final_fpgrowth})
+            
+            
+            association_results_FPGROWTH = fpgrowth_find_association_rules(
+                df, minsupp, minconf)
+            
+            rules_fp_antecedents_list = list(association_results_FPGROWTH['antecedents'])
+            rules_fp_consequents_list = list(association_results_FPGROWTH['consequents'])
+            rules_fp_support_list = list(association_results_FPGROWTH['support'])
+            rules_fp_confidence_list = list(association_results_FPGROWTH['confidence'])
+            rules_fp_lift_list = list(association_results_FPGROWTH['lift'])
+            
+            rules_fp_final = []
+            for i in range(0, len(rules_fp_antecedents_list)):
+                onerules = {}
+                onerules['antecedents'] = list(rules_fp_antecedents_list[i])
+                onerules['consequents'] = list(rules_fp_consequents_list[i])
+                onerules['support'] = round(rules_fp_support_list[i], 3)
+                onerules['confidence'] = round(rules_fp_confidence_list[i], 3)
+                onerules['lift'] = round(rules_fp_lift_list[i], 3)
+                rules_fp_final.append(onerules)
+            return render(request, 'website/show_rules.html', {'selectedAlgorithm': selectedAlgorithm, 'lenrules': len(rules_fp_final), 'lendata': len(df), 'association_rules': rules_fp_final})
