@@ -3,37 +3,103 @@
 {%load crispy_forms_tags%}
 {%block content%}
 <div class="content-section">
-    <form method="POST" action="{% url 'rules' %}" enctype="multipart/form-data">
-        <form class="md-form">
-            {% csrf_token %}
-            <div class="form-group custom-file">
-                <input type="file" class="custom-file-input" id="customFile" accept=".csv, .xlsx" name="file_name">
-                <label class="custom-file-label" for="customFile">Choose file</label>
+    <div class="container">
+        <ul class="nav nav-tabs">
+            <li class="active" style="margin-right: 1cm;"><a data-toggle="tab" href="#home">Load Database</a></li>
+            <li><a data-toggle="tab" href="#menu1">Load file</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="home" class="tab-pane fade in active">
+
+                <form method="POST" action="{% url 'rulesfromdatabase' %}" enctype="multipart/form-data">
+                    <form class="md-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputServerName">Server Name:</label>
+                                    <input type="text" class="form-control" id="inputServerName" name="ServerName">
+                                </div>
+                                <div class="form-group col-md-6">
+
+                                    <label for="inputDatabaseName">Database Name:</label>
+                                    <input autocomplete="on" type="text" class="form-control" id="inputDatabaseName" name="DatabaseName">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="inputUsername">Username:</label>
+                                    <input autocomplete="off" type="text" class="form-control" id="inputUsername"
+                                        name="Username">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="inputPassword">Password:</label>
+                                    <input autocomplete="off" type="password" class="form-control" id="inputPassword" name="Password">
+                                </div>
+                            </div>
+                            <label for="selectAlgorithm">Algorithm</label>
+                            <select id="selectAlgorithm" class="form-control" name="selectedAlgorithm">
+                                <option selected>Choose...</option>
+                                <option>Apriori</option>
+                                <option>FP-Growth</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputMinSupp">Minimum Support (%)</label>
+                                <input type="text" class="form-control" id="inputMinSupp" name="minsupp">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputMinConf">Minimum Confidence (%)</label>
+                                <input type="text" class="form-control" id="inputMinConf" name="minconf">
+                            </div>
+                        </div>
+                        <div class="form_group">
+                            <button class="btn btn-outline-info" type="submit">Calculate</button>
+                        </div>
+                    </form>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="selectAlgorithm">Algorithm</label>
-                <select id="selectAlgorithm" class="form-control" name="selectedAlgorithm">
-                    <option selected>Choose...</option>
-                    <option>Apriori</option>
-                    <option>FP-Growth</option>
-                </select>
+            <div id="menu1" class="tab-pane fade">
+                <form method="POST" action="{% url 'rules' %}" enctype="multipart/form-data">
+                    <form class="md-form">
+                        {% csrf_token %}
+                        <div class="form-group custom-file">
+                            <input type="file" class="custom-file-input" id="customFile" accept=".csv, .xlsx"
+                                name="file_name">
+                            <label class="custom-file-label" for="customFile">Choose file</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="selectAlgorithm">Algorithm</label>
+                            <select id="selectAlgorithm" class="form-control" name="selectedAlgorithm">
+                                <option selected>Choose...</option>
+                                <option>Apriori</option>
+                                <option>FP-Growth</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputMinSupp">Minimum Support (%)</label>
+                                <input type="text" class="form-control" id="inputMinSupp" name="minsupp">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputMinConf">Minimum Confidence (%)</label>
+                                <input type="text" class="form-control" id="inputMinConf" name="minconf">
+                            </div>
+                        </div>
+                        <div class="form_group">
+                            <button class="btn btn-outline-info" type="submit">Calculate</button>
+                        </div>
+                    </form>
+                </form>
             </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputMinSupp">Minimum Support (%)</label>
-                    <input type="text" class="form-control" id="inputMinSupp" name="minsupp">
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="inputMinConf">Minimum Confidence</label>
-                    <input type="text" class="form-control" id="inputMinConf" name="minconf">
-                </div>
-            </div>
-            <div class="form_group">
-                <button class="btn btn-outline-info" type="submit">Calculate</button>
-            </div>
-        </form>
-    </form>
+        </div>
+    </div>
 </div>
+
+
 <script>
     // Add the following code if you want the name of the file appear on select
     $(".custom-file-input").on("change", function () {
